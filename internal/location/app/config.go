@@ -2,6 +2,7 @@ package app
 
 import (
 	httpadapter "final-project/internal/location/adapters/http"
+	config_reader "final-project/pkg/config-reader"
 	"time"
 )
 
@@ -38,6 +39,8 @@ func NewConfig() (*Config, error) {
 			BasePath:     DefaultBasePath,
 		},
 	}
+
+	config_reader.ReadEnv(cnf)
 
 	return &cnf, nil
 }
