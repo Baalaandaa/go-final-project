@@ -8,13 +8,16 @@ import (
 )
 
 func ReadEnv(config interface{}) {
-	val := reflect.ValueOf(config)
+	readEnv(reflect.ValueOf(config).Elem())
+}
+
+func readEnv(val reflect.Value) {
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
 		fieldType := field.Kind()
 		tagValue, exist := val.Type().Field(i).Tag.Lookup("env")
 		if fieldType == reflect.Struct {
-			ReadEnv(field.Interface())
+			readEnv(field)
 		}
 		if !exist {
 			continue
