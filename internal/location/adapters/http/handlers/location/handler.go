@@ -5,6 +5,7 @@ import (
 	"final-project/internal/location/model"
 	"final-project/internal/location/service"
 	"final-project/pkg/helpers"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 
 	"github.com/juju/zaputil/zapctx"
@@ -31,7 +32,7 @@ func (l locationHandler) UpdateLocation(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var driverId = r.Context().Value("driverID").(string)
+	var driverId = chi.URLParam(r, "driverID")
 
 	logger.Infof("Update driver %+v location", driverId)
 

@@ -68,6 +68,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 
 	pgxPool, err := helpers.InitPostgres(ctx, fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", config.Postgres.User, config.Postgres.Password, config.Postgres.Host, config.Postgres.Database), config.Postgres.MigrationsPath)
 	if err != nil {
+		l.Sugar().Fatalf("InitPostgres err: %+v", err)
 		return nil, err
 	}
 

@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -11,7 +10,6 @@ func GetLogger(debug bool) (*zap.Logger, error) {
 	var err error
 	var l *zap.Logger
 
-	fmt.Println(debug)
 	if debug {
 		developmentCfg := zap.NewDevelopmentConfig()
 		developmentCfg.Encoding = "console"

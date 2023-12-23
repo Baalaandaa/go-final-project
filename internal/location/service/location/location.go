@@ -12,18 +12,11 @@ type locationService struct {
 }
 
 func (l locationService) UpdateLocation(ctx context.Context, driver *model.Driver) error {
-	return nil
+	return l.repo.UpdateLocation(ctx, driver.Lat, driver.Lng, driver.DriverId)
 }
 
 func (l locationService) GetNearbyDrivers(ctx context.Context, location *model.LatLngLiteral) ([]*model.Driver, error) {
-	drivers := []*model.Driver{
-		&model.Driver{
-			Lat:      0.5,
-			Lng:      0.4,
-			DriverId: "abacaba",
-		},
-	}
-	return drivers, nil
+	return l.repo.GetNearbyDrivers(ctx, location.Lat, location.Lng, location.Radius)
 }
 
 func New(repo repository.Location) service.Location {
