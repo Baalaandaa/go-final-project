@@ -19,6 +19,8 @@ type AppConfig struct {
 }
 
 type DatabaseConfig struct {
+	DatabaseUri  string `env:"DATABASE_URI"`
+	DatabaseName string `env:"DATABASE_NAME"`
 }
 
 type OTLPConfig struct {

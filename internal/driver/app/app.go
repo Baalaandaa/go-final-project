@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"final-project/internal/driver/adapters/http"
+	httpadapter "final-project/internal/driver/adapters/http"
 	"final-project/internal/driver/service"
 	"final-project/internal/driver/service/driver"
 	"final-project/pkg/logger"
@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"github.com/juju/zaputil/zapctx"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
@@ -56,6 +58,23 @@ func (a app) Shutdown() {
 	a.httpAdapter.Shutdown(ctx)
 }
 
+func ConnectToDB(uri string, name string) (*mongo.Database, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := client.Ping(ctx, nil); err != nil {
+		return nil, err
+	}
+
+	db := client.Database(name)
+	return db, nil
+}
+
 func New(ctx context.Context, config *Config) (App, error) {
 	l, err := logger.GetLogger(config.App.Debug)
 	if err != nil {
@@ -64,7 +83,11 @@ func New(ctx context.Context, config *Config) (App, error) {
 
 	ctx = zapctx.WithLogger(ctx, l)
 
-	driverService := driver.New()
+	db, err := ConnectToDB(config.Database.DatabaseUri, config.Database.DatabaseName)
+	if err != nil {
+		return nil, err
+	}
+	driverService := driver.New(db)
 
 	return &app{
 		config:        config,
