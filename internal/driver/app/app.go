@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	httpadapter "final-project/internal/driver/adapters/http"
+	driver_repo "final-project/internal/driver/repository/driver"
 	"final-project/internal/driver/service"
 	"final-project/internal/driver/service/driver"
 	"final-project/pkg/logger"
@@ -58,7 +59,7 @@ func (a app) Shutdown() {
 	a.httpAdapter.Shutdown(ctx)
 }
 
-func ConnectToDB(uri string, name string) (*mongo.Database, error) {
+func ConnectMongoDB(uri string, name string) (*mongo.Database, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -83,11 +84,13 @@ func New(ctx context.Context, config *Config) (App, error) {
 
 	ctx = zapctx.WithLogger(ctx, l)
 
-	db, err := ConnectToDB(config.Database.DatabaseUri, config.Database.DatabaseName)
+	db, err := ConnectMongoDB(config.Database.DatabaseUri, config.Database.DatabaseName)
 	if err != nil {
 		return nil, err
 	}
-	driverService := driver.New(db)
+
+	driverRepo := driver_repo.New(db, config.Database.DatabaseName)
+	driverService := driver.New(driverRepo)
 
 	return &app{
 		config:        config,
