@@ -3,10 +3,12 @@ package location
 import (
 	"context"
 	"final-project/internal/location/model"
+	"final-project/internal/location/repository"
 	"final-project/internal/location/service"
 )
 
 type locationService struct {
+	repo repository.Location
 }
 
 func (l locationService) UpdateLocation(ctx context.Context, driver *model.Driver) error {
@@ -24,6 +26,8 @@ func (l locationService) GetNearbyDrivers(ctx context.Context, location *model.L
 	return drivers, nil
 }
 
-func New() service.Location {
-	return &locationService{}
+func New(repo repository.Location) service.Location {
+	return &locationService{
+		repo: repo,
+	}
 }

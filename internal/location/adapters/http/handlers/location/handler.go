@@ -9,7 +9,6 @@ import (
 
 	"github.com/juju/zaputil/zapctx"
 	"go.opentelemetry.io/otel"
-	"go.uber.org/zap"
 )
 
 type locationHandler struct {
@@ -22,7 +21,7 @@ func (l locationHandler) UpdateLocation(w http.ResponseWriter, r *http.Request) 
 	_, span := tracer.Start(r.Context(), "locationHandler")
 	defer span.End()
 
-	logger := zapctx.Logger(r.Context())
+	logger := zapctx.Logger(r.Context()).Sugar()
 	logger.Info("UpdateLocationCalled")
 
 	var location model.LatLngLiteral
@@ -34,7 +33,7 @@ func (l locationHandler) UpdateLocation(w http.ResponseWriter, r *http.Request) 
 
 	var driverId = r.Context().Value("driverID").(string)
 
-	logger.Info("Update driver location", zap.String("driverId", driverId))
+	logger.Infof("Update driver %+v location", driverId)
 
 	err := l.locationService.UpdateLocation(r.Context(), &model.Driver{
 		Lat:      location.Lat,
@@ -53,7 +52,7 @@ func (l locationHandler) GetNearbyDrivers(w http.ResponseWriter, r *http.Request
 	_, span := tracer.Start(r.Context(), "locationHandler")
 	defer span.End()
 
-	logger := zapctx.Logger(r.Context())
+	logger := zapctx.Logger(r.Context()).Sugar()
 	logger.Info("GetNearbyDrivers")
 
 	var location model.LatLngLiteral

@@ -18,7 +18,12 @@ type AppConfig struct {
 	ShutdownTimeoutInSeconds int  `env:"SHUTDOWN_TIMEOUT"`
 }
 
-type DatabaseConfig struct {
+type PostgresConfig struct {
+	Host           string `env:"POSTGRES_HOST"`
+	User           string `env:"POSTGRES_USER"`
+	Password       string `env:"POSTGRES_PASSWORD"`
+	Database       string `env:"POSTGRES_DB"`
+	MigrationsPath string `env:"POSTGRES_MIGRATION_PATH"`
 }
 
 type OTLPConfig struct {
@@ -27,7 +32,7 @@ type OTLPConfig struct {
 
 type Config struct {
 	App      AppConfig
-	Database DatabaseConfig
+	Postgres PostgresConfig
 	OTLP     OTLPConfig
 
 	HTTP httpadapter.Config
@@ -38,7 +43,6 @@ func NewConfig() (*Config, error) {
 		App: AppConfig{
 			ShutdownTimeoutInSeconds: DefaultShutdownTimeout,
 		},
-		Database: DatabaseConfig{},
 		HTTP: httpadapter.Config{
 			ServeAddress: DefaultServeAddress,
 			BasePath:     DefaultBasePath,

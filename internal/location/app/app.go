@@ -3,10 +3,13 @@ package app
 import (
 	"context"
 	"final-project/internal/location/adapters/http"
+	location_repo "final-project/internal/location/repository/location"
 	"final-project/internal/location/service"
 	"final-project/internal/location/service/location"
+	"final-project/pkg/helpers"
 	"final-project/pkg/logger"
 	"final-project/pkg/otel"
+	"fmt"
 	"github.com/juju/zaputil/zapctx"
 	"go.uber.org/zap"
 	"log"
@@ -63,7 +66,13 @@ func New(ctx context.Context, config *Config) (App, error) {
 
 	ctx = zapctx.WithLogger(ctx, l)
 
-	locationService := location.New()
+	pgxPool, err := helpers.InitPostgres(ctx, fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", config.Postgres.User, config.Postgres.Password, config.Postgres.Host, config.Postgres.Database), config.Postgres.MigrationsPath)
+	if err != nil {
+		return nil, err
+	}
+
+	locationRepo := location_repo.New(pgxPool)
+	locationService := location.New(locationRepo)
 
 	return &app{
 		config:          config,

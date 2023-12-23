@@ -3,7 +3,6 @@ package helpers
 import (
 	"encoding/json"
 	"errors"
-	"final-project/internal/location/service"
 	"fmt"
 	"net/http"
 )
@@ -32,9 +31,9 @@ func WriteJSONResponse(w http.ResponseWriter, status int, payload interface{}) {
 
 func WriteError(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, service.ErrForbidden):
+	case errors.Is(err, ErrForbidden):
 		WriteJSONResponse(w, http.StatusForbidden, Error{Message: err.Error()})
-	case errors.Is(err, service.ErrNotFound):
+	case errors.Is(err, ErrNotFound):
 		WriteJSONResponse(w, http.StatusNotFound, Error{Message: err.Error()})
 	default:
 		WriteJSONResponse(w, http.StatusInternalServerError, Error{Message: err.Error()})
