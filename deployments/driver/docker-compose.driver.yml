@@ -1,0 +1,44 @@
+services:
+  driver-mongo:
+    image: "mongo"
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - $DRIVER_ENV
+    #    environment:
+    #      MONGO_INITDB_ROOT_USERNAME: root
+    #      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    env_file:
+      - $DRIVER_ENV
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@mongo:27017/
+
+  build_driver:
+    image: build_driver:develop
+    build:
+      context: "../../"
+      dockerfile: "deployments/driver/build.Dockerfile"
+
+  driver:
+    build:
+      context: "../../"
+      dockerfile: "deployments/driver/driver.Dockerfile"
+    restart: unless-stopped
+    depends_on:
+      build_driver:
+        condition: service_completed_successfully
+      driver-mongo:
+        condition: service_started
+    env_file:
+      - $DRIVER_ENV
+    ports:
+      - 5553:5553

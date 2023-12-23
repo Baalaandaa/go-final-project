@@ -1,0 +1,36 @@
+services:
+  build_location:
+    image: build_location:develop
+    build:
+      context: "../../"
+      dockerfile: "deployments/location/build.Dockerfile"
+
+  location:
+    build:
+      context: "../../"
+      dockerfile: "deployments/location/location.Dockerfile"
+    restart: unless-stopped
+    depends_on:
+      build_location:
+        condition: service_completed_successfully
+      location-postgres:
+        condition: service_healthy
+#    volumes:
+#      - './migrations:/app/migrations'
+    env_file:
+      - $LOCATION_ENV
+    ports:
+      - 5355:5355
+
+  location-postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - $LOCATION_ENV
+    healthcheck:
+      test: "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"
+      interval: 10s
+      timeout: 5s
+      retries: 5

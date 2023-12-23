@@ -3,3 +3,4 @@
 .env
 
 prom_data
+deployments/kafka/data
