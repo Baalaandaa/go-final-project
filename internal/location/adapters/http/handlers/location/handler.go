@@ -5,10 +5,11 @@ import (
 	"final-project/internal/location/model"
 	"final-project/internal/location/service"
 	"final-project/pkg/helpers"
+	"net/http"
+
 	"github.com/juju/zaputil/zapctx"
 	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type locationHandler struct {
@@ -45,7 +46,7 @@ func (l locationHandler) UpdateLocation(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (l locationHandler) GetNearbyDrivers(w http.ResponseWriter, r *http.Request) {
