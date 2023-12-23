@@ -40,7 +40,7 @@ func (d driverService) ListTrips(ctx context.Context, userId string) (*[]model.T
 		var trip model.Trip
 		err := cursor.Decode(&trip)
 		if err != nil {
-			log.Println("Error decoding trip:", err)
+			log.Fatal("Error decoding trip:", err)
 			continue
 		}
 		result = append(result, trip)
