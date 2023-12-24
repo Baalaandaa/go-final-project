@@ -16,6 +16,13 @@ type driverRepo struct {
 	db *mongo.Database
 }
 
+func (d driverRepo) CreateTrip(ctx context.Context, trip *model.Trip) error {
+	collection := d.db.Collection("trips")
+
+	_, err := collection.InsertOne(ctx, trip)
+	return err
+}
+
 func (d driverRepo) GetTripsList(ctx context.Context, userId string) (*[]model.Trip, error) {
 	collection := d.db.Collection("trips")
 

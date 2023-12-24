@@ -6,7 +6,6 @@ import (
 	"final-project/internal/driver/repository"
 	"final-project/internal/driver/service"
 	kafka_producer "final-project/pkg/kafka-producer"
-	"github.com/juju/zaputil/zapctx"
 )
 
 const (
@@ -24,10 +23,7 @@ type driverService struct {
 }
 
 func (d driverService) CreateTrip(ctx context.Context, trip *model.Trip) error {
-	l := zapctx.Logger(ctx).Sugar()
-
-	l.Infof("CreateTrip %+v", trip)
-	return nil
+	return d.repo.CreateTrip(ctx, trip)
 }
 
 func (d driverService) ListTrips(ctx context.Context, userId string) (*[]model.Trip, error) {
