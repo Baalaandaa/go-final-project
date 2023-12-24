@@ -1,6 +1,7 @@
 package model
 
 import (
+	kafka_producer "final-project/pkg/kafka-producer"
 	"github.com/gofrs/uuid"
 	"time"
 )
@@ -12,6 +13,17 @@ type CreatedTripEvent struct {
 	DataContentType string `json:"datacontenttype"`
 	Time            string `json:"time"`
 	Data            *Trip  `json:"data"`
+}
+
+func (ev CreatedTripEvent) ToKafkaMessage() *kafka_producer.KafkaMessage {
+	return &kafka_producer.KafkaMessage{
+		ID:              ev.ID,
+		Source:          ev.Source,
+		Type:            ev.Type,
+		DataContentType: ev.DataContentType,
+		Time:            ev.Time,
+		Data:            ev.Data,
+	}
 }
 
 func NewCreatedTripEvent(data *Trip) *CreatedTripEvent {
@@ -32,12 +44,23 @@ type AcceptTripPayload struct {
 }
 
 type AcceptTripCommand struct {
-	ID              string            `json:"id"`
-	Source          string            `json:"source"`
-	Type            string            `json:"type"`
-	DataContentType string            `json:"datacontenttype"`
-	Time            string            `json:"time"`
-	Data            AcceptTripPayload `json:"data"`
+	ID              string             `json:"id"`
+	Source          string             `json:"source"`
+	Type            string             `json:"type"`
+	DataContentType string             `json:"datacontenttype"`
+	Time            string             `json:"time"`
+	Data            *AcceptTripPayload `json:"data"`
+}
+
+func (cmd AcceptTripCommand) ToKafkaMessage() *kafka_producer.KafkaMessage {
+	return &kafka_producer.KafkaMessage{
+		ID:              cmd.ID,
+		Source:          cmd.Source,
+		Type:            cmd.Type,
+		DataContentType: cmd.DataContentType,
+		Time:            cmd.Time,
+		Data:            cmd.Data,
+	}
 }
 
 func NewAcceptTripCommand(tripID, driverID string) *AcceptTripCommand {
@@ -48,7 +71,7 @@ func NewAcceptTripCommand(tripID, driverID string) *AcceptTripCommand {
 		Type:            "trip.command.accept",
 		DataContentType: "application/json",
 		Time:            time.Now().Format(time.RFC3339),
-		Data: AcceptTripPayload{
+		Data: &AcceptTripPayload{
 			TripID:   tripID,
 			DriverID: driverID,
 		},
@@ -60,12 +83,23 @@ type EndTripPayload struct {
 }
 
 type EndTripCommand struct {
-	ID              string         `json:"id"`
-	Source          string         `json:"source"`
-	Type            string         `json:"type"`
-	DataContentType string         `json:"datacontenttype"`
-	Time            string         `json:"time"`
-	Data            EndTripPayload `json:"data"`
+	ID              string          `json:"id"`
+	Source          string          `json:"source"`
+	Type            string          `json:"type"`
+	DataContentType string          `json:"datacontenttype"`
+	Time            string          `json:"time"`
+	Data            *EndTripPayload `json:"data"`
+}
+
+func (cmd EndTripCommand) ToKafkaMessage() *kafka_producer.KafkaMessage {
+	return &kafka_producer.KafkaMessage{
+		ID:              cmd.ID,
+		Source:          cmd.Source,
+		Type:            cmd.Type,
+		DataContentType: cmd.DataContentType,
+		Time:            cmd.Time,
+		Data:            cmd.Data,
+	}
 }
 
 func NewEndTripCommand(tripID string) *EndTripCommand {
@@ -76,7 +110,7 @@ func NewEndTripCommand(tripID string) *EndTripCommand {
 		Type:            "trip.command.end",
 		DataContentType: "application/json",
 		Time:            time.Now().Format(time.RFC3339),
-		Data: EndTripPayload{
+		Data: &EndTripPayload{
 			TripID: tripID,
 		},
 	}
@@ -87,12 +121,23 @@ type StartTripPayload struct {
 }
 
 type StartTripCommand struct {
-	ID              string           `json:"id"`
-	Source          string           `json:"source"`
-	Type            string           `json:"type"`
-	DataContentType string           `json:"datacontenttype"`
-	Time            string           `json:"time"`
-	Data            StartTripPayload `json:"data"`
+	ID              string            `json:"id"`
+	Source          string            `json:"source"`
+	Type            string            `json:"type"`
+	DataContentType string            `json:"datacontenttype"`
+	Time            string            `json:"time"`
+	Data            *StartTripPayload `json:"data"`
+}
+
+func (cmd StartTripCommand) ToKafkaMessage() *kafka_producer.KafkaMessage {
+	return &kafka_producer.KafkaMessage{
+		ID:              cmd.ID,
+		Source:          cmd.Source,
+		Type:            cmd.Type,
+		DataContentType: cmd.DataContentType,
+		Time:            cmd.Time,
+		Data:            cmd.Data,
+	}
 }
 
 func NewStartTripCommand(tripID string) *StartTripCommand {
@@ -103,7 +148,7 @@ func NewStartTripCommand(tripID string) *StartTripCommand {
 		Type:            "trip.command.end",
 		DataContentType: "application/json",
 		Time:            time.Now().Format(time.RFC3339),
-		Data: StartTripPayload{
+		Data: &StartTripPayload{
 			TripID: tripID,
 		},
 	}

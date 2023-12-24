@@ -1,8 +1,10 @@
 package driverHandler
 
 import (
+	"final-project/internal/driver/model"
 	"final-project/internal/driver/service"
 	"final-project/pkg/helpers"
+	"time"
 
 	"net/http"
 
@@ -25,13 +27,20 @@ func (dh *driverHandler) ListTrips(w http.ResponseWriter, r *http.Request) {
 	logger.Info("ListTripsCalled")
 
 	userId := r.Header.Get("user_id")
-	trips, err := dh.driverService.ListTrips(r.Context(), userId)
-	if err != nil {
-		helpers.WriteError(w, err)
-		return
+	for i := 0; i < 10; i++ {
+		trips, err := dh.driverService.ListTrips(r.Context(), userId)
+		if err != nil {
+			helpers.WriteError(w, err)
+			return
+		}
+		if len(trips) > 0 {
+			helpers.WriteJSONResponse(w, http.StatusOK, trips)
+			return
+		}
+		time.Sleep(1 * time.Second)
 	}
 
-	helpers.WriteJSONResponse(w, http.StatusOK, trips)
+	helpers.WriteJSONResponse(w, http.StatusOK, []*model.Trip{})
 }
 
 func (dh *driverHandler) GetTrip(w http.ResponseWriter, r *http.Request) {

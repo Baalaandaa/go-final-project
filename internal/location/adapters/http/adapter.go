@@ -4,8 +4,11 @@ import (
 	"context"
 	locationHandler "final-project/internal/location/adapters/http/handlers/location"
 	"final-project/internal/location/service"
+	chiprometheus "github.com/766b/chi-prometheus"
 	"github.com/go-chi/chi/v5"
 	"github.com/juju/zaputil/zapctx"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/riandyrn/otelchi"
 	"go.uber.org/zap"
 	"moul.io/chizap"
 	"net/http"
@@ -23,16 +26,19 @@ type adapter struct {
 func (a adapter) Serve() error {
 	r := chi.NewRouter()
 
-	//r.Use(otelchi.Middleware("location_service"))
+	r.Use(chiprometheus.NewMiddleware("location_service"))
+	r.Use(otelchi.Middleware("location_service"))
 	r.Use(chizap.New(a.logger, &chizap.Opts{
 		WithReferer:   true,
 		WithUserAgent: true,
 	}))
 
+	r.Handle("/metrics", promhttp.Handler())
+
 	apiRouter := chi.NewRouter()
 
-	apiRouter.Get("/drivers", http.HandlerFunc(a.locationHandler.GetNearbyDrivers))
-	apiRouter.Post("/drivers/{driverID}/location", http.HandlerFunc(a.locationHandler.UpdateLocation))
+	apiRouter.Get("/drivers", a.locationHandler.GetNearbyDrivers)
+	apiRouter.Post("/drivers/{driverID}/location", a.locationHandler.UpdateLocation)
 
 	r.Mount(a.config.BasePath, apiRouter)
 	a.server = &http.Server{Addr: a.config.ServeAddress, Handler: r}
@@ -49,8 +55,6 @@ func (a adapter) Shutdown(ctx context.Context) {
 }
 
 func New(ctx context.Context, config *Config, locationService service.Location) Adapter {
-
-	// TODO: swagger address
 
 	return &adapter{
 		config:          config,

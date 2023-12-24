@@ -24,7 +24,6 @@ func readEnv(val reflect.Value) {
 		}
 		configValue, ok := os.LookupEnv(tagValue)
 		if !ok {
-			// TODO: log
 			continue
 		}
 		if fieldType == reflect.String {
@@ -32,8 +31,6 @@ func readEnv(val reflect.Value) {
 		} else if fieldType == reflect.Int {
 			if val, ok := strconv.ParseInt(configValue, 10, 64); ok == nil {
 				field.SetInt(val)
-			} else {
-				// TODO: log
 			}
 		} else if fieldType == reflect.Bool {
 			if strings.Contains(configValue, "true") || strings.Contains(configValue, "1") {

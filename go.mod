@@ -3,11 +3,14 @@ module final-project
 go 1.21.5
 
 require (
+	github.com/766b/chi-prometheus v0.0.0-20211217152057-87afa9aa2ca8
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/juju/zaputil v0.0.0-20190326175239-ef53049637ac
+	github.com/prometheus/client_golang v1.17.0
+	github.com/riandyrn/otelchi v0.5.1
 	github.com/segmentio/kafka-go v0.4.47
 	go.mongodb.org/mongo-driver v1.13.1
 	go.opentelemetry.io/otel v1.21.0
@@ -19,7 +22,10 @@ require (
 )
 
 require (
+	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/felixge/httpsnoop v1.0.2 // indirect
 	github.com/go-chi/chi v1.5.4 // indirect
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -36,13 +42,18 @@ require (
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/lib/pq v1.10.9 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pierrec/lz4/v4 v4.1.16 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/prometheus/client_model v0.4.1-0.20230718164431-9a2bf3000d16 // indirect
+	github.com/prometheus/common v0.44.0 // indirect
+	github.com/prometheus/procfs v0.11.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	go.opentelemetry.io/contrib v1.0.0 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect

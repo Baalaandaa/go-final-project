@@ -23,17 +23,17 @@ func (d driverRepo) CreateTrip(ctx context.Context, trip *model.Trip) error {
 	return err
 }
 
-func (d driverRepo) GetTripsList(ctx context.Context, userId string) (*[]model.Trip, error) {
+func (d driverRepo) GetTripsList(ctx context.Context, userId string) ([]*model.Trip, error) {
 	collection := d.db.Collection("trips")
 
-	filter := bson.M{"driver_id": userId}
+	filter := bson.M{"driver_id": userId, "status": "DRIVER_SEARCH"}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	var result []model.Trip
+	var result []*model.Trip
 	for cursor.Next(ctx) {
 		var trip model.Trip
 		err := cursor.Decode(&trip)
@@ -41,13 +41,13 @@ func (d driverRepo) GetTripsList(ctx context.Context, userId string) (*[]model.T
 			log.Fatal("Error decoding trip:", err)
 			continue
 		}
-		result = append(result, trip)
+		result = append(result, &trip)
 	}
 
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
-	return &result, nil
+	return result, nil
 }
 
 func (d driverRepo) GetTrip(ctx context.Context, userId string, tripId string) (*model.Trip, error) {
