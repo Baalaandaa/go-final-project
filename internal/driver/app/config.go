@@ -9,14 +9,16 @@ import (
 const (
 	AppName                = "driver_service"
 	DefaultServeAddress    = "localhost:5553"
+	DefaultLocationBaseUrl = "http://localhost:5355"
 	DefaultShutdownTimeout = 20
 	DefaultBasePath        = "/driver/v1"
 	DefaultOTLPEndpoint    = "0.0.0.0:4317"
 )
 
 type AppConfig struct {
-	Debug                    bool `env:"DEBUG"`
-	ShutdownTimeoutInSeconds int  `env:"SHUTDOWN_TIMEOUT"`
+	Debug                    bool   `env:"DEBUG"`
+	ShutdownTimeoutInSeconds int    `env:"SHUTDOWN_TIMEOUT"`
+	LocationBaseUrl          string `env:"LOCATION_BASE_URL"`
 }
 
 type DatabaseConfig struct {
@@ -40,6 +42,7 @@ func NewConfig() (*Config, error) {
 	cnf := Config{
 		App: AppConfig{
 			ShutdownTimeoutInSeconds: DefaultShutdownTimeout,
+			LocationBaseUrl:          DefaultLocationBaseUrl,
 		},
 		Database: DatabaseConfig{},
 		HTTP: httpadapter.Config{

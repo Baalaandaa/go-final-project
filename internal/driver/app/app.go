@@ -104,7 +104,7 @@ func New(ctx context.Context, config *Config) (App, error) {
 	producer := kafka_producer.NewProducer(strings.Split(config.Kafka.ProduceBroker, ","))
 
 	driverRepo := driver_repo.New(db, config.Database.DatabaseName)
-	driverService := driver.New(driverRepo, producer)
+	driverService := driver.New(driverRepo, producer, config.App.LocationBaseUrl)
 
 	return &app{
 		config:        config,
