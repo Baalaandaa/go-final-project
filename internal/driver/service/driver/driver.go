@@ -5,6 +5,8 @@ import (
 	"final-project/internal/driver/model"
 	"final-project/internal/driver/repository"
 	"final-project/internal/driver/service"
+	kafka_producer "final-project/pkg/kafka-producer"
+	"github.com/juju/zaputil/zapctx"
 )
 
 const (
@@ -17,7 +19,15 @@ const (
 )
 
 type driverService struct {
-	repo repository.Driver
+	producer kafka_producer.Producer
+	repo     repository.Driver
+}
+
+func (d driverService) CreateTrip(ctx context.Context, trip *model.Trip) error {
+	l := zapctx.Logger(ctx).Sugar()
+
+	l.Infof("CreateTrip %+v", trip)
+	return nil
 }
 
 func (d driverService) ListTrips(ctx context.Context, userId string) (*[]model.Trip, error) {
@@ -44,8 +54,9 @@ func (d driverService) EndTrip(ctx context.Context, userId string, tripId string
 	return d.repo.ChangeTripStatus(ctx, userId, tripId, StatusEnded, nil)
 }
 
-func New(repo repository.Driver) service.Driver {
+func New(repo repository.Driver, producer kafka_producer.Producer) service.Driver {
 	return &driverService{
-		repo: repo,
+		repo:     repo,
+		producer: producer,
 	}
 }

@@ -2,6 +2,7 @@ package app
 
 import (
 	httpadapter "final-project/internal/driver/adapters/http"
+	"final-project/internal/driver/adapters/kafka"
 	config_reader "final-project/pkg/config-reader"
 )
 
@@ -31,8 +32,8 @@ type Config struct {
 	App      AppConfig
 	Database DatabaseConfig
 	OTLP     OTLPConfig
-
-	HTTP httpadapter.Config
+	Kafka    kafka.KafkaConfig
+	HTTP     httpadapter.Config
 }
 
 func NewConfig() (*Config, error) {

@@ -3,15 +3,17 @@ package app
 import (
 	"context"
 	httpadapter "final-project/internal/driver/adapters/http"
+	"final-project/internal/driver/adapters/kafka"
 	driver_repo "final-project/internal/driver/repository/driver"
 	"final-project/internal/driver/service"
 	"final-project/internal/driver/service/driver"
+	kafka_producer "final-project/pkg/kafka-producer"
 	"final-project/pkg/logger"
 	"final-project/pkg/otel"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -27,7 +29,8 @@ type app struct {
 
 	driverService service.Driver
 
-	httpAdapter httpadapter.Adapter
+	httpAdapter  httpadapter.Adapter
+	kafkaAdapter kafka.Adapter
 }
 
 func (a app) Serve() error {
@@ -39,9 +42,17 @@ func (a app) Serve() error {
 	signal.Notify(done, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
-		log.Println("Start serving")
+		a.logger.Sugar().Infof("Start serving")
 		if err := a.httpAdapter.Serve(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("Serve error", err.Error())
+			a.logger.Sugar().Fatalf("Serve error: %+v", err.Error())
+		}
+	}()
+
+	go func() {
+		ctx := zapctx.WithLogger(context.Background(), a.logger)
+		a.logger.Sugar().Infof("Start consuming")
+		if err := a.kafkaAdapter.Consume(ctx); err != nil {
+			a.logger.Sugar().Fatalf("Consume error: %+v", err.Error())
 		}
 	}()
 
@@ -57,6 +68,7 @@ func (a app) Shutdown() {
 	defer cancel()
 
 	a.httpAdapter.Shutdown(ctx)
+	a.kafkaAdapter.Shutdown(ctx)
 }
 
 func ConnectMongoDB(uri string, name string) (*mongo.Database, error) {
@@ -89,13 +101,16 @@ func New(ctx context.Context, config *Config) (App, error) {
 		return nil, err
 	}
 
+	producer := kafka_producer.NewProducer(strings.Split(config.Kafka.ProduceBroker, ","))
+
 	driverRepo := driver_repo.New(db, config.Database.DatabaseName)
-	driverService := driver.New(driverRepo)
+	driverService := driver.New(driverRepo, producer)
 
 	return &app{
 		config:        config,
 		logger:        l,
 		driverService: driverService,
+		kafkaAdapter:  kafka.NewAdapter(&config.Kafka, driverService),
 		httpAdapter:   httpadapter.New(ctx, &config.HTTP, driverService),
 	}, nil
 }
